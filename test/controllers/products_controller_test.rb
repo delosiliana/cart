@@ -3,52 +3,52 @@ require 'test_helper'
 class ProductsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @product = products(:one)
-      @update = {
-        title: 'Lorem ipsum',
-        description: 'Wibbles are fun!',
-        image_url: 'lorem.jpg',
-        price: 19.95
-      }
+    @title = "The Great Book #{rand(1000)}"
   end
 
-  test "should get index" do
-    get products_url
-    assert_response :success
-    assert_not_nil assigns(:products)
-  end
-
-  test "should get new" do
-    get new_product_url
-    assert_response :success
+  def create
+    @product = Product.new(product_params)
+    respond_to do |format|
+      if @product.save
+        format.html { redirect_to @product,
+          notice: 'Product was successfully created.' }
+        format.json { render :show, status: :created,
+          location: @product }
+      else
+        puts @product.errors.full_messages
+        format.html { render :new }
+        format.json { render json: @product.errors,
+          status: :unprocessable_entity }
+      end
+    end
   end
 
   test "should create product" do
     assert_difference('Product.count') do
-      post :create, product: @update
+
+    post products_url, params: {
+      product: {
+        description: @product.description,
+        image_url: @product.image_url,
+        price: @product.price,
+        title: @title,
+      }
+    }
     end
-    assert_redirected_to product_path(assigns(:product))
-  end
 
-  test "should show product" do
-    get product_url(@product)
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get edit_product_url(@product)
-    assert_response :success
+    assert_redirected_to product_url(Product.last)
   end
 
   test "should update product" do
-    patch :update, id: @product, product: @update
-    assert_redirected_to product_path(assigns(:product))
-  end
+    patch product_url(@product), params: {
+      product: {
+        description: @product.description,
+        image_url: @product.image_url,
+        price: @product.price,
+        title: @title,
+      }
+    }
 
-  test "should destroy product" do
-    assert_difference('Product.count', -1) do
-      delete product_url(@product)
-    end
-
-    assert_redirected_to products_url
+    assert_redirected_to product_url(@product)
   end
 end
