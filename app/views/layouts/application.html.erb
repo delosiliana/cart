@@ -9,7 +9,11 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <body class='<%= controller.controller_name %>'>
-    <%= yield %>
+  <body>
+
+    <main class='<%= controller.controller_name %>'>
+      <%= yield %>
+    </main>
+
   </body>
 </html>
